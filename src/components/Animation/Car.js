@@ -318,6 +318,89 @@ const CarModel = () => {
       animateGridPositionBeforeTransition();
     };
 
+    const createSmoke = () => {
+      const smokeGeometry = new THREE.BufferGeometry();
+      const smokeCount = 1000; // Number of smoke particles
+      const positions = new Float32Array(smokeCount * 3); // 3 vertices per particle
+      const velocities = new Float32Array(smokeCount * 3); // Store velocity for each particle
+      const sizes = new Float32Array(smokeCount); // Store size for each particle
+
+      // Define the starting position
+      const startPosition = new THREE.Vector3(0, 0, -4);
+
+      // Initialize positions, velocities, and sizes
+      for (let i = 0; i < smokeCount; i++) {
+        // Offset random positions by the starting position
+        const x = startPosition.x + (Math.random() * 2 - 1); // Random x position around start
+        const y = startPosition.y + (Math.random() * 2 - 1); // Random y position around start
+        const z = startPosition.z + (Math.random() * 2 - 1); // Random z position around start
+        positions.set([x, y, z], i * 3);
+
+        // Set random velocity for each particle (vertical and slightly sideways)
+        const vx = (Math.random() - 0.5) * 0.1; // Random velocity in x
+        const vy = Math.random() * 0.1 + 0.1; // Random upward velocity to rise faster
+        const vz = (Math.random() - 0.5) * 0.1; // Random velocity in z
+        velocities.set([vx, vy, vz], i * 3);
+
+        // Randomize size of particles for variation
+        sizes[i] = Math.random() * 0.5 + 0.5; // Size between 0.5 and 1
+      }
+
+      smokeGeometry.setAttribute(
+        "position",
+        new THREE.BufferAttribute(positions, 3)
+      );
+      smokeGeometry.setAttribute(
+        "velocity",
+        new THREE.BufferAttribute(velocities, 3)
+      );
+      smokeGeometry.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
+
+      const smokeMaterial = new THREE.MeshBasicMaterial({
+        color: 0x888888, // Color of the smoke
+        transparent: true,
+        opacity: 0.5,
+        depthWrite: false,
+      });
+
+      const smokeParticles = [];
+
+      for (let i = 0; i < smokeCount; i++) {
+        const cylinderGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 8); // Cylindrical geometry
+        const particleMesh = new THREE.Mesh(cylinderGeometry, smokeMaterial);
+
+        // Use the calculated positions from the offset
+        particleMesh.position.set(
+          positions[i * 3],
+          positions[i * 3 + 1],
+          positions[i * 3 + 2]
+        );
+        particleMesh.rotation.x = Math.random() * Math.PI; // Randomize rotation
+        particleMesh.rotation.y = Math.random() * Math.PI;
+        particleMesh.scale.set = (1.5, 1.5, 1.5);
+
+        smokeParticles.push(particleMesh);
+        scene.add(particleMesh);
+      }
+
+      const smokeDirection = new THREE.Vector3(1, 2.2, -6); // Direction towards the sky
+      const smokeSpeed = 0.02; // Speed of smoke
+
+      const animateSmoke = () => {
+        smokeParticles.forEach((particle) => {
+          particle.position.add(
+            smokeDirection.clone().multiplyScalar(smokeSpeed)
+          ); // Move smoke in the direction
+          if (particle.position.y > 3) {
+            scene.remove(particle); // Remove after a certain height
+          }
+        });
+        requestAnimationFrame(animateSmoke);
+      };
+
+      animateSmoke();
+    };
+
     // Animates the grid position before the transition
     const animateGridPositionBeforeTransition = () => {
       const duration = 5; // Duration for grid movement
@@ -386,6 +469,11 @@ const CarModel = () => {
           controlSpotlightIntensity(400, 800, 600); // Adjust spotlight intensity after transition
           flashCarLights(); // Flash car lights
           resetWheelRotation(); // Reset wheel rotation
+
+          // Start the second animation with a 3-second delay
+          setTimeout(() => {
+            animateGridPositionBeforeSecondTransition();
+          }, 5000); // Delay in milliseconds (3000 ms = 3 seconds)
         }
       };
 
@@ -405,6 +493,106 @@ const CarModel = () => {
         THREE.MathUtils.lerp(startRot.x, endRot.x, t),
         THREE.MathUtils.lerp(startRot.y, endRot.y, t),
         THREE.MathUtils.lerp(startRot.z, endRot.z, t)
+      );
+    };
+    // Animates the grid position before the transition
+    const animateGridPositionBeforeSecondTransition = () => {
+      const duration = 0.5; // Duration for grid movement
+      const startTime = clock.getElapsedTime();
+
+      const updateGridPosition = () => {
+        const elapsedTime = clock.getElapsedTime() - startTime;
+        const timeInPeriod = elapsedTime % duration;
+
+        // Move the grid based on elapsed time
+        grid.position.z = (-timeInPeriod * 3) % 1;
+
+        if (elapsedTime >= duration) {
+          transitionCameraToThirdPosition();
+          return;
+        }
+
+        // Continue updating the grid position
+        requestAnimationFrame(updateGridPosition);
+      };
+
+      updateGridPosition();
+    };
+
+    // Smoothly transitions the camera position and rotation
+    const transitionCameraToThirdPosition = () => {
+      const thirdPosition = new THREE.Vector3(
+        0.9585598021476531,
+        1.659640384030547,
+        -9.657584552622703
+      );
+      const thirdRotation = new THREE.Euler(
+        -3.0220891887340238,
+        0.09822955835134238,
+        3.1298171826938366
+      );
+
+      const duration = 0.33; // Transition duration in seconds
+      const startPosition = camera.position.clone();
+      const startRotation = camera.rotation.clone();
+      const elapsedTime = { value: 0 };
+
+      const performTransition = () => {
+        const delta = clock.getDelta();
+        elapsedTime.value += delta;
+
+        const t = Math.min(elapsedTime.value / duration, 1); // Clamp t between 0 and 1 for smooth interpolation
+
+        // Interpolate camera position and rotation
+        interpolateCameraThirdPositionRotation(
+          startPosition,
+          thirdPosition,
+          startRotation,
+          thirdRotation,
+          t
+        );
+
+        // Update the grid position based on elapsed time
+        grid.position.z = (elapsedTime.value * 2) % 1;
+
+        // If transition is still in progress, continue updating
+        if (t < 1) {
+          requestAnimationFrame(performTransition);
+        } else {
+          createSmoke();
+        }
+      };
+
+      performTransition();
+    };
+
+    // Interpolates camera position and rotation smoothly using quaternions
+    const interpolateCameraThirdPositionRotation = (
+      startPos,
+      endPos,
+      startRot,
+      endRot,
+      t
+    ) => {
+      // Interpolate camera position
+      camera.position.lerpVectors(startPos, endPos, t);
+
+      // Create quaternions from the start and end Euler rotations
+      const startQuaternion = new THREE.Quaternion().setFromEuler(startRot);
+      const endQuaternion = new THREE.Quaternion().setFromEuler(endRot);
+
+      // Interpolate the quaternions using spherical linear interpolation (slerp)
+      const interpolatedQuaternion = new THREE.Quaternion().slerpQuaternions(
+        startQuaternion,
+        endQuaternion,
+        t
+      );
+
+      // Apply the interpolated quaternion to the camera
+      camera.quaternion.copy(interpolatedQuaternion);
+
+      console.log(
+        `Interpolated Quaternion: ${interpolatedQuaternion.toArray()}`
       );
     };
 
@@ -474,7 +662,7 @@ const CarModel = () => {
     };
 
     const animate = () => {
-      //   controls.update();
+      // controls.update();
       controls.enabled = false;
       renderer.render(scene, camera);
       stats.update();
