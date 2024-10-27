@@ -5,8 +5,6 @@
 /.pnp
 .pnp.js
 
-# textures
-/public/textures
 
 # testing
 /coverage
