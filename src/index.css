@@ -1,0 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Squint&display=swap");
+
+
+body {
+  margin: 0;
+  font-family: "Squint", sans-serif !important; /* Replace with Squint Italic */
+  font-style: italic; /* Apply italic style */
+  font-weight: 900;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image: linear-gradient(to left, #ffffff, #cfcbc8); /* Updated gradient using palette colors */
+  color: #cfcbc8;
+  letter-spacing: 0.05em;
+}
+
