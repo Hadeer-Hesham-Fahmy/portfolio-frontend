@@ -5,6 +5,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 import Stats from "three/examples/jsm/libs/stats.module";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 
 const CarModel = () => {
   const containerRef = useRef();
@@ -15,6 +17,7 @@ const CarModel = () => {
     let grid;
     let clock;
     let carLights;
+    let carModel;
 
     let firstPosition = {
       x: 0.011360530913838223,
@@ -72,7 +75,7 @@ const CarModel = () => {
       camera = new THREE.PerspectiveCamera(
         40,
         window.innerWidth / window.innerHeight,
-        0.1,
+        0.01,
         100
       );
       camera.position.set(firstPosition.x, firstPosition.y, firstPosition.z);
@@ -121,7 +124,7 @@ const CarModel = () => {
       loader.load(
         "models/gltf/ferrari.glb",
         (gltf) => {
-          const carModel = gltf.scene;
+          carModel = gltf.scene;
 
           // Helper function to create material with specified properties
           const createMaterial = ({
@@ -282,6 +285,11 @@ const CarModel = () => {
 
           // Add the car model to the scene
           scene.add(carModel);
+
+          // Set a timeout for animateGridPositionBeforeTransition
+          setTimeout(() => {
+            animateGridPositionBeforeTransition();
+          }, 1000); // Adjust the timeout duration as needed
         },
         undefined,
         (error) => {
@@ -315,37 +323,45 @@ const CarModel = () => {
       localStorage.setItem("cameraPosition", JSON.stringify(secondPosition));
       localStorage.setItem("cameraRotation", JSON.stringify(secondRotation));
 
-      animateGridPositionBeforeTransition();
+      // animateGridPositionBeforeTransition();
     };
 
     const createSmoke = () => {
-      const smokeGeometry = new THREE.BufferGeometry();
-      const smokeCount = 1000; // Number of smoke particles
+      const smokeCount = 1300; // Number of smoke particles
       const positions = new Float32Array(smokeCount * 3); // 3 vertices per particle
       const velocities = new Float32Array(smokeCount * 3); // Store velocity for each particle
       const sizes = new Float32Array(smokeCount); // Store size for each particle
 
       // Define the starting position
-      const startPosition = new THREE.Vector3(0, 0, -4);
+      const startPosition = new THREE.Vector3(0, -1, -5);
+      const minZ = -9;
+      const smokeSpeed = 0.1; // Speed of smoke
+      const smokeDirection = new THREE.Vector3(1, 2.2, -4).normalize(); // Direction towards the sky
 
       // Initialize positions, velocities, and sizes
       for (let i = 0; i < smokeCount; i++) {
         // Offset random positions by the starting position
-        const x = startPosition.x + (Math.random() * 2 - 1); // Random x position around start
-        const y = startPosition.y + (Math.random() * 2 - 1); // Random y position around start
-        const z = startPosition.z + (Math.random() * 2 - 1); // Random z position around start
+        const x = startPosition.x + (Math.random() * 2 - 1);
+        const y = startPosition.y + (Math.random() * 2 - 1);
+        const z = Math.max(startPosition.z + (Math.random() * 2 - 1), minZ);
+
         positions.set([x, y, z], i * 3);
 
         // Set random velocity for each particle (vertical and slightly sideways)
-        const vx = (Math.random() - 0.5) * 0.1; // Random velocity in x
-        const vy = Math.random() * 0.1 + 0.1; // Random upward velocity to rise faster
-        const vz = (Math.random() - 0.5) * 0.1; // Random velocity in z
-        velocities.set([vx, vy, vz], i * 3);
+        velocities.set(
+          [
+            (Math.random() - 0.5) * 0.3,
+            Math.random() * 0.1 + 0.1,
+            (Math.random() - 0.5) * 0.1,
+          ],
+          i * 3
+        );
 
         // Randomize size of particles for variation
-        sizes[i] = Math.random() * 0.5 + 0.5; // Size between 0.5 and 1
+        sizes[i] = Math.random() * 0.5 + 0.5;
       }
 
+      const smokeGeometry = new THREE.BufferGeometry();
       smokeGeometry.setAttribute(
         "position",
         new THREE.BufferAttribute(positions, 3)
@@ -357,53 +373,110 @@ const CarModel = () => {
       smokeGeometry.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
 
       const smokeMaterial = new THREE.MeshBasicMaterial({
-        color: 0x888888, // Color of the smoke
+        color: 0x888888,
         transparent: true,
         opacity: 0.5,
         depthWrite: false,
       });
 
+      const cylinderGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 8);
       const smokeParticles = [];
 
       for (let i = 0; i < smokeCount; i++) {
-        const cylinderGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 8); // Cylindrical geometry
         const particleMesh = new THREE.Mesh(cylinderGeometry, smokeMaterial);
-
-        // Use the calculated positions from the offset
         particleMesh.position.set(
           positions[i * 3],
           positions[i * 3 + 1],
           positions[i * 3 + 2]
         );
-        particleMesh.rotation.x = Math.random() * Math.PI; // Randomize rotation
-        particleMesh.rotation.y = Math.random() * Math.PI;
-        particleMesh.scale.set = (1.5, 1.5, 1.5);
+        particleMesh.rotation.set(
+          Math.random() * Math.PI,
+          Math.random() * Math.PI,
+          0
+        );
+        particleMesh.scale.set(1.5, 1.5, 1.5);
 
         smokeParticles.push(particleMesh);
         scene.add(particleMesh);
       }
 
-      const smokeDirection = new THREE.Vector3(1, 2.2, -6); // Direction towards the sky
-      const smokeSpeed = 0.02; // Speed of smoke
+      let textLight = null;
+      let backLight = null;
+      let textMesh = null;
+      let showText = false;
+      let removedParticles = 0;
 
       const animateSmoke = () => {
-        smokeParticles.forEach((particle) => {
+        for (let i = 0; i < smokeCount; i++) {
+          const particle = smokeParticles[i];
+          if (!particle) continue;
+
+          // Update particle position using pre-defined direction and speed
           particle.position.add(
             smokeDirection.clone().multiplyScalar(smokeSpeed)
-          ); // Move smoke in the direction
-          if (particle.position.y > 3) {
-            scene.remove(particle); // Remove after a certain height
+          );
+
+          if (!showText && particle.position.y > 1.2) {
+            showText = true;
+            displayText();
           }
-        });
+
+          if (textMesh && particle.position.y > 2) {
+            scene.remove(textLight, backLight, textMesh);
+            textMesh = null;
+            transitionCameraToFourthPosition();
+            controlSpotlightIntensity(0, 0, 600); // Adjust spotlight intensity after transition
+          }
+
+          if (particle.position.y > 3) {
+            scene.remove(particle);
+          }
+        }
         requestAnimationFrame(animateSmoke);
       };
 
       animateSmoke();
+
+      const displayText = () => {
+        const loader = new FontLoader();
+        loader.load(
+          "https://raw.githubusercontent.com/7dir/json-fonts/master/fonts/cyrillic/roboto/Roboto_Regular.json",
+          (font) => {
+            const textGeometry = new TextGeometry("FULL STACK DEVELOPER", {
+              font: font,
+              size: 0.021,
+              height: -0.01,
+              curveSegments: 8,
+            });
+            textGeometry.center();
+
+            const textMaterial = new THREE.MeshPhongMaterial({
+              color: 0x222222,
+              shininess: 70,
+              specular: 0x666666,
+            });
+
+            textMesh = new THREE.Mesh(textGeometry, textMaterial);
+            textMesh.position.set(0.925, 1.635, -9.407);
+            textMesh.rotation.set(0, Math.PI, 0);
+
+            textLight = new THREE.DirectionalLight(0xffffff, 1.5);
+            textLight.position.set(2, 2, 3);
+            scene.add(textLight);
+
+            backLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            backLight.position.set(-2, -1, -1);
+            scene.add(backLight);
+
+            scene.add(textMesh);
+          }
+        );
+      };
     };
 
     // Animates the grid position before the transition
     const animateGridPositionBeforeTransition = () => {
-      const duration = 5; // Duration for grid movement
+      const duration = 3; // Duration for grid movement
       const startTime = clock.getElapsedTime();
 
       const updateGridPosition = () => {
@@ -473,7 +546,7 @@ const CarModel = () => {
           // Start the second animation with a 3-second delay
           setTimeout(() => {
             animateGridPositionBeforeSecondTransition();
-          }, 5000); // Delay in milliseconds (3000 ms = 3 seconds)
+          }, 4000); // Delay in milliseconds (4000 ms = 4 seconds)
         }
       };
 
@@ -496,7 +569,7 @@ const CarModel = () => {
       );
     };
     // Animates the grid position before the transition
-    const animateGridPositionBeforeSecondTransition = () => {
+    const animateGridPositionBeforeThirdTransition = () => {
       const duration = 0.5; // Duration for grid movement
       const startTime = clock.getElapsedTime();
 
@@ -508,7 +581,35 @@ const CarModel = () => {
         grid.position.z = (-timeInPeriod * 3) % 1;
 
         if (elapsedTime >= duration) {
-          transitionCameraToThirdPosition();
+          transitionCameraToFifthPosition();
+
+          return;
+        }
+
+        // Continue updating the grid position
+        requestAnimationFrame(updateGridPosition);
+      };
+
+      updateGridPosition();
+    };
+
+    // Animates the grid position before the transition
+    const animateGridPositionBeforeFourthTransition = () => {
+      const initialDuration = 2; // Initial duration for grid movement
+      const startTime = clock.getElapsedTime();
+      let speed = 0; // Initial speed
+
+      const updateGridPosition = () => {
+        const elapsedTime = clock.getElapsedTime() - startTime;
+
+        // Increase speed over time
+        speed += 1 * elapsedTime; // Adjust this value to control the acceleration rate
+
+        // Move the grid based on elapsed time and the increased speed
+        grid.position.z = (-elapsedTime * speed) % 1;
+
+        if (elapsedTime >= initialDuration) {
+          transitionCameraToSixthPosition();
           return;
         }
 
@@ -566,6 +667,177 @@ const CarModel = () => {
       performTransition();
     };
 
+    // Smoothly transitions the camera position and rotation
+    const transitionCameraToFourthPosition = () => {
+      const fourthPosition = new THREE.Vector3(
+        -0.06995848505213946,
+        0.5000000000000004,
+        7.184502671528425
+      );
+      const fourthRotation = new THREE.Euler(
+        -6.18121017074641e-17,
+        -0.009737107394319799,
+        -6.018615619467827e-19
+      );
+
+      const duration = 0.33; // Transition duration in seconds
+      const startPosition = camera.position.clone();
+      const startRotation = camera.rotation.clone();
+      const elapsedTime = { value: 0 };
+
+      const performTransition = () => {
+        const delta = clock.getDelta();
+        elapsedTime.value += delta;
+
+        const t = Math.min(elapsedTime.value / duration, 1); // Clamp t between 0 and 1 for smooth interpolation
+
+        // Interpolate camera position and rotation
+        interpolateCameraThirdPositionRotation(
+          startPosition,
+          fourthPosition,
+          startRotation,
+          fourthRotation,
+          t
+        );
+
+        // If transition is still in progress, continue updating
+        if (t < 1) {
+          requestAnimationFrame(performTransition);
+        } else {
+          setTimeout(() => {
+            animateGridPositionBeforeThirdTransition();
+          }, 3000); // 3-second delay
+        }
+      };
+
+      performTransition();
+    };
+
+    const transitionCameraToFifthPosition = () => {
+      const fifthPosition = new THREE.Vector3(
+        -0.1409001448897513,
+        0.8511307574041045,
+        1.578605209814845
+      );
+      const fifthRotation = new THREE.Euler(
+        -0.21886790328396646,
+        -0.08690733270800344,
+        -0.019304163067079882
+      );
+
+      const duration = 0.5; // Transition duration in seconds
+      const startPosition = camera.position.clone();
+      const startRotation = camera.rotation.clone();
+      const elapsedTime = { value: 0 };
+
+      // Cubic ease-in function
+      const easeInCubic = (t) => t * t * t;
+
+      const performTransition = () => {
+        const delta = clock.getDelta();
+        elapsedTime.value += delta;
+
+        // Calculate eased progress using the cubic easing function
+        const progress = Math.min(elapsedTime.value / duration, 1);
+        const easedT = easeInCubic(progress);
+
+        // Interpolate camera position and rotation with eased progress
+        interpolateCameraThirdPositionRotation(
+          startPosition,
+          fifthPosition,
+          startRotation,
+          fifthRotation,
+          easedT
+        );
+
+        // If transition is still in progress, continue updating
+        if (progress < 1) {
+          requestAnimationFrame(performTransition);
+        } else {
+          setTimeout(() => {
+            animateGridPositionBeforeFourthTransition();
+          }, 2000); // 4-second delay for the camera transition
+        }
+      };
+
+      performTransition();
+    };
+
+    const transitionCameraToSixthPosition = () => {
+      const sixthPosition = new THREE.Vector3(
+        -0.12265624605997878,
+        1.3553678008123193,
+        1.3742057483199792
+      );
+      const sixthRotation = new THREE.Euler(
+        -0.556760061158256,
+        -0.07563136355462739,
+        -0.04699688197370023
+      );
+
+      const duration = 0.5; // Transition duration in seconds for a smoother effect
+      const startPosition = camera.position.clone();
+      const startRotation = camera.rotation.clone();
+      const elapsedTime = { value: 0 };
+
+      // Sine ease-in-out function
+      const easeInOutSine = (t) => {
+        return (1 - Math.cos(t * Math.PI)) / 2; // Sine ease-in-out
+      };
+
+      const performTransition = () => {
+        const delta = clock.getDelta();
+        elapsedTime.value += delta;
+
+        // Calculate eased progress using the sine easing function
+        const progress = Math.min(elapsedTime.value / duration, 1);
+        const easedT = easeInOutSine(progress); // Using sine easing function
+
+        // Interpolate camera position and rotation with eased progress
+        interpolateCameraThirdPositionRotation(
+          startPosition,
+          sixthPosition,
+          startRotation,
+          sixthRotation,
+          easedT
+        );
+
+        // If transition is still in progress, continue updating
+        if (progress < 1) {
+          requestAnimationFrame(performTransition);
+        } else {
+          // Optionally, re-enable controls or trigger other actions after the transition
+          controls.enabled = true; // Re-enable controls after transition completes
+        }
+      };
+
+      performTransition();
+    };
+
+    // Animates the grid position before the transition
+    const animateGridPositionBeforeSecondTransition = () => {
+      const duration = 0.5; // Duration for grid movement
+      const startTime = clock.getElapsedTime();
+
+      const updateGridPosition = () => {
+        const elapsedTime = clock.getElapsedTime() - startTime;
+        const timeInPeriod = elapsedTime % duration;
+
+        // Move the grid based on elapsed time
+        grid.position.z = (-timeInPeriod * 3) % 1;
+
+        if (elapsedTime >= duration) {
+          transitionCameraToThirdPosition();
+          return;
+        }
+
+        // Continue updating the grid position
+        requestAnimationFrame(updateGridPosition);
+      };
+
+      updateGridPosition();
+    };
+
     // Interpolates camera position and rotation smoothly using quaternions
     const interpolateCameraThirdPositionRotation = (
       startPos,
@@ -591,9 +863,12 @@ const CarModel = () => {
       // Apply the interpolated quaternion to the camera
       camera.quaternion.copy(interpolatedQuaternion);
 
-      console.log(
-        `Interpolated Quaternion: ${interpolatedQuaternion.toArray()}`
-      );
+      // console.log(
+      // `Interpolated Quaternion: ${interpolatedQuaternion.toArray()}`
+      console.log("Camera Position:", camera.position);
+      console.log("Camera Rotation:", camera.rotation);
+      console.log("Controls Target:", controls.target);
+      // );
     };
 
     // Rotates wheels during the transition
