@@ -12,12 +12,17 @@ const CarModel = () => {
   const containerRef = useRef();
 
   useEffect(() => {
-    let camera, scene, renderer, controls, stats;
+    let camera, scene, renderer, controls, stats, gridDivisions, gridSize;
     const wheels = [];
     let grid;
+    let ground;
     let clock;
     let carLights;
     let carModel;
+    let sprite;
+    let textSprite;
+    let newTextSprite;
+    let lastTextSprite;
 
     let firstPosition = {
       x: 0.011360530913838223,
@@ -83,7 +88,7 @@ const CarModel = () => {
 
       // Set up OrbitControls
       controls = new OrbitControls(camera, container);
-      controls.maxDistance = 12;
+      // controls.maxDistance = 12;
       controls.maxPolarAngle = THREE.MathUtils.degToRad(90);
       controls.target.set(0, 0.5, 0);
       controls.update();
@@ -97,8 +102,8 @@ const CarModel = () => {
       // Set up the scene
       scene = new THREE.Scene();
 
-      const gridSize = 14; // Increase the size
-      const gridDivisions = 20; // Increase the number of divisions
+      gridSize = 14; // Increase the size
+      gridDivisions = 20; // Increase the number of divisions
       grid = new THREE.GridHelper(gridSize, gridDivisions, 0xcfcbc8, 0xcfcbc8);
       grid.material.opacity = 0.1;
       grid.material.depthWrite = false;
@@ -289,6 +294,7 @@ const CarModel = () => {
           // Set a timeout for animateGridPositionBeforeTransition
           setTimeout(() => {
             animateGridPositionBeforeTransition();
+            // animateGridPositionBeforeSixthTransition();
           }, 1000); // Adjust the timeout duration as needed
         },
         undefined,
@@ -298,7 +304,7 @@ const CarModel = () => {
       );
 
       // Add a red plane under the car
-      const ground = new THREE.Mesh(
+      ground = new THREE.Mesh(
         new THREE.PlaneGeometry(20, 14), // Adjust the size of the plane as needed
         new THREE.MeshStandardMaterial({
           color: 0xff0000,
@@ -322,8 +328,6 @@ const CarModel = () => {
       // Save the second position after the animation completes
       localStorage.setItem("cameraPosition", JSON.stringify(secondPosition));
       localStorage.setItem("cameraRotation", JSON.stringify(secondRotation));
-
-      // animateGridPositionBeforeTransition();
     };
 
     const createSmoke = () => {
@@ -442,7 +446,7 @@ const CarModel = () => {
         loader.load(
           "https://raw.githubusercontent.com/7dir/json-fonts/master/fonts/cyrillic/roboto/Roboto_Regular.json",
           (font) => {
-            const textGeometry = new TextGeometry("FULL STACK DEVELOPER", {
+            const textGeometry = new TextGeometry("a FULL STACK DEVELOPER", {
               font: font,
               size: 0.021,
               height: -0.01,
@@ -620,6 +624,59 @@ const CarModel = () => {
       updateGridPosition();
     };
 
+    // Animates the grid position before the transition
+    const animateGridPositionBeforeFifthTransition = () => {
+      const initialDuration = 2; // Initial duration for grid movement
+      const startTime = clock.getElapsedTime();
+      let speed = 0; // Initial speed
+
+      const updateGridPosition = () => {
+        const elapsedTime = clock.getElapsedTime() - startTime;
+
+        // Increase speed over time
+        speed += 1 * elapsedTime; // Adjust this value to control the acceleration rate
+
+        // Move the grid based on elapsed time and the increased speed
+        grid.position.z = (-elapsedTime * speed) % 1;
+
+        if (elapsedTime >= initialDuration) {
+          transitionCameraToSixthPosition();
+          return;
+        }
+
+        // Continue updating the grid position
+        requestAnimationFrame(updateGridPosition);
+      };
+
+      updateGridPosition();
+    };
+
+    const animateGridPositionBeforeSixthTransition = () => {
+      const initialDuration = 2; // Initial duration for grid movement
+      const startTime = clock.getElapsedTime();
+      let speed = 0; // Initial speed
+
+      const updateGridPosition = () => {
+        const elapsedTime = clock.getElapsedTime() - startTime;
+
+        // Increase speed over time
+        speed += 1 * elapsedTime; // Adjust this value to control the acceleration rate
+
+        // Move the grid based on elapsed time and the increased speed
+        grid.position.z = (-elapsedTime * speed) % 1;
+
+        if (elapsedTime >= initialDuration) {
+          transitionCameraToSeventhPosition();
+          return;
+        }
+
+        // Continue updating the grid position
+        requestAnimationFrame(updateGridPosition);
+      };
+
+      updateGridPosition();
+    };
+
     // Smoothly transitions the camera position and rotation
     const transitionCameraToThirdPosition = () => {
       const thirdPosition = new THREE.Vector3(
@@ -713,6 +770,76 @@ const CarModel = () => {
       performTransition();
     };
 
+    // // Create a raycaster and a vector for mouse position
+    // const raycaster = new THREE.Raycaster();
+    // const mouse = new THREE.Vector2();
+
+    // // Add event listener for mouse click
+    // window.addEventListener("click", (event) => {
+    //   // Convert mouse position to normalized device coordinates (-1 to +1) for both components
+    //   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    //   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    //   // Update the raycaster with the camera and mouse position
+    //   raycaster.setFromCamera(mouse, camera);
+
+    //   // Calculate objects intersecting the picking ray
+    //   const intersects = raycaster.intersectObject(ground);
+
+    //   // Log the intersections for debugging
+    //   console.log(intersects); // Check the contents of intersects
+
+    //   if (intersects.length > 0) {
+    //     // Get the first intersected object
+    //     const intersectionPoint = intersects[0].point;
+    //     console.log("Clicked Position:", intersectionPoint);
+
+    //     // Optionally, create a visual marker at the clicked position
+    //     const markerGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+    //     const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    //     const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+    //     marker.position.copy(intersectionPoint);
+    //     scene.add(marker);
+    //   } else {
+    //     console.log("No intersection with the ground plane");
+    //   }
+    // });
+
+    const createTextSprite = (texts, options = {}) => {
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      const fontSize = options.fontSize || 45; // Set a default font size
+      const lineHeight = options.lineHeight || 72; // Set a default font size
+
+      // Adjust canvas size to fit text length and number of lines
+      canvas.width = 800; // Adjust width based on text length
+      canvas.height = lineHeight * texts.length + 100; // Adjust height based on the number of lines
+
+      // Set the font style
+      context.font = `bold ${fontSize}px Roboto`;
+      context.fillStyle = "#000000"; // Text color
+
+      // Loop through each line of text and draw it on the canvas
+      texts.forEach((text, index) => {
+        context.fillText(text, 20, (index + 1) * lineHeight); // Add padding from the left side
+      });
+
+      // Create texture from the canvas
+      const texture = new THREE.Texture(canvas);
+      texture.needsUpdate = true; // Update the texture for rendering
+
+      const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+      sprite = new THREE.Sprite(spriteMaterial);
+
+      // Set the sprite size to scale appropriately
+      sprite.scale.set(canvas.width / 400, canvas.height / 400, 1); // Adjust scale to fit in 3D scene
+
+      // Position the sprite slightly above the ground
+      sprite.position.set(-0.25, 0.15, 3); // Adjust Y value to prevent clipping into the ground
+
+      return sprite;
+    };
+
     const transitionCameraToFifthPosition = () => {
       const fifthPosition = new THREE.Vector3(
         -0.1409001448897513,
@@ -754,6 +881,33 @@ const CarModel = () => {
         if (progress < 1) {
           requestAnimationFrame(performTransition);
         } else {
+          // After the transition is complete, create and add the text sprite
+          textSprite = createTextSprite([
+            "FAST LEARNER",
+            "FAST THINKER",
+            "FAST PROBLEM-SOLVER",
+            "FAST EXECUTER",
+          ]);
+          // textSprite.position.z = 3;
+          newTextSprite = createTextSprite(
+            [
+              "Over 50 Certifications Earned",
+              "2+ Years Experience",
+              "10+ Completed Projects",
+              "Most Improved Employee Badge Winner",
+            ],
+            {
+              fontSize: 30,
+              lineHeight: 52, // Set the line height for spacing between lines
+            }
+          );
+          // newTextSprite.position.z = 4;
+          lastTextSprite = createTextSprite(["A", "GAME", "CHANGER"], {
+            fontSize: 70,
+          });
+          // lastTextSprite.position.z = 5;
+
+          scene.add(textSprite, newTextSprite, lastTextSprite); // Add the sprite to the scene
           setTimeout(() => {
             animateGridPositionBeforeFourthTransition();
           }, 2000); // 4-second delay for the camera transition
@@ -762,6 +916,7 @@ const CarModel = () => {
 
       performTransition();
     };
+    let transitionCounter = 0;
 
     const transitionCameraToSixthPosition = () => {
       const sixthPosition = new THREE.Vector3(
@@ -775,15 +930,18 @@ const CarModel = () => {
         -0.04699688197370023
       );
 
-      const duration = 0.5; // Transition duration in seconds for a smoother effect
+      const duration = 0.33; // Transition duration in seconds for a smoother effect
       const startPosition = camera.position.clone();
       const startRotation = camera.rotation.clone();
+      const startZPosition = sprite.position.z;
+      const targetZPosition = -0.45;
       const elapsedTime = { value: 0 };
 
       // Sine ease-in-out function
-      const easeInOutSine = (t) => {
-        return (1 - Math.cos(t * Math.PI)) / 2; // Sine ease-in-out
-      };
+      const easeInOutSine = (t) => (1 - Math.cos(t * Math.PI)) / 2;
+
+      // Ease-out quadratic function for a gradual slow-down effect
+      const easeOutQuad = (t) => t * (2 - t);
 
       const performTransition = () => {
         const delta = clock.getDelta();
@@ -791,7 +949,8 @@ const CarModel = () => {
 
         // Calculate eased progress using the sine easing function
         const progress = Math.min(elapsedTime.value / duration, 1);
-        const easedT = easeInOutSine(progress); // Using sine easing function
+        const easedT = easeInOutSine(progress);
+        const easedOutT = easeOutQuad(progress);
 
         // Interpolate camera position and rotation with eased progress
         interpolateCameraThirdPositionRotation(
@@ -802,12 +961,161 @@ const CarModel = () => {
           easedT
         );
 
+        // Interpolating z position of the sprite based on current transition
+        if (transitionCounter === 0) {
+          // Move initial textSprite to target z position
+          textSprite.position.z = THREE.MathUtils.lerp(
+            startZPosition,
+            targetZPosition,
+            easedOutT
+          );
+        } else if (transitionCounter === 1) {
+          // Move newTextSprite to target position and old textSprite away
+          textSprite.position.z = THREE.MathUtils.lerp(
+            startZPosition,
+            -3, // Move the old text sprite further back
+            easedOutT
+          );
+          newTextSprite.position.z = THREE.MathUtils.lerp(
+            startZPosition,
+            targetZPosition, // Bring newTextSprite to the main position
+            easedOutT
+          );
+        } else if (transitionCounter === 2) {
+          // Move the previous textSprites further back and bring in the lastTextSprite
+          textSprite.position.z = -5; // Move first text sprite further away
+          newTextSprite.position.z = THREE.MathUtils.lerp(
+            startZPosition,
+            -3, // Move new text sprite further back
+            easedOutT
+          );
+          lastTextSprite.position.z = THREE.MathUtils.lerp(
+            startZPosition,
+            targetZPosition, // Bring lastTextSprite to the main position
+            easedOutT
+          );
+        }
+
         // If transition is still in progress, continue updating
         if (progress < 1) {
           requestAnimationFrame(performTransition);
         } else {
-          // Optionally, re-enable controls or trigger other actions after the transition
-          controls.enabled = true; // Re-enable controls after transition completes
+          transitionCounter++;
+          if (transitionCounter === 3) {
+            animateGridPositionBeforeSixthTransition();
+
+            return; // Exit the function if the limit is reached
+          }
+          setTimeout(() => {
+            animateGridPositionBeforeFifthTransition();
+          }, 2000);
+        }
+      };
+
+      performTransition();
+    };
+
+    const updateGroundDimensions = (newWidth, newHeight) => {
+      // Dispose of the old geometry
+      ground.geometry.dispose();
+
+      // Create a new geometry with the updated dimensions
+      ground.geometry = new THREE.PlaneGeometry(newWidth, newHeight);
+    };
+
+    const updateGridDimensions = (newSize, newDivisions) => {
+      // Remove the existing grid from the scene
+      scene.remove(grid);
+
+      // Dispose of the old grid material
+      grid.geometry.dispose();
+      grid.material.dispose();
+
+      // Create a new grid helper with updated dimensions
+      grid = new THREE.GridHelper(newSize, newDivisions, 0xcfcbc8, 0xcfcbc8);
+      grid.material.opacity = 0.1;
+      grid.material.depthWrite = false;
+      grid.material.transparent = true;
+
+      // Add the new grid to the scene
+      scene.add(grid);
+    };
+
+    const transitionCameraToSeventhPosition = () => {
+      const seventhPosition = new THREE.Vector3(
+        5.50008718517777052084,
+        88.43225805251171,
+        -3.000011467962763065247
+      );
+      const seventhRotation = new THREE.Euler(
+        -1.5707964572130506,
+        -9.915039110854299e-7,
+        -1.701581204220701
+      );
+
+      const duration = 3; // Transition duration in seconds for a smoother effect
+      const startPosition = camera.position.clone();
+      const startRotation = camera.rotation.clone();
+
+      const elapsedTime = { value: 0 };
+
+      // Sine ease-in-out function
+      const easeInOutSine = (t) => (1 - Math.cos(t * Math.PI)) / 2;
+
+      const performTransition = () => {
+        const delta = clock.getDelta();
+        elapsedTime.value += delta;
+
+        // Calculate eased progress using the sine easing function
+        const progress = Math.min(elapsedTime.value / duration, 1);
+        const easedT = easeInOutSine(progress);
+
+        // Apply a funny bounce effect on the Y axis and wobble on the X axis
+        const bounceY = Math.sin(progress * 10 * Math.PI) * 2; // Creates an exaggerated bouncing effect
+        const wobbleX = Math.sin(progress * 5 * Math.PI) * 0.05; // Wobbles on the X axis
+
+        // Create a new funny position by adding bounce and wobble
+        const funnyPosition = new THREE.Vector3(
+          THREE.MathUtils.lerp(
+            startPosition.x,
+            seventhPosition.x + wobbleX,
+            easedT
+          ),
+          THREE.MathUtils.lerp(
+            startPosition.y,
+            seventhPosition.y + bounceY,
+            easedT
+          ),
+          seventhPosition.z
+        );
+
+        // Keep the rotation interpolation unchanged
+        interpolateCameraThirdPositionRotation(
+          startPosition,
+          funnyPosition,
+          startRotation,
+          seventhRotation,
+          easedT
+        );
+
+        // Ground manipulation
+        if (ground && grid) {
+          // Assuming groundMesh is your ground object
+          // Calculate the color change for the ground
+          const blackColor = new THREE.Color(0x222222);
+          const greyColor = new THREE.Color(0x565656);
+          // Slowing down the progress change by dividing by a factor (e.g., 5)
+          const slowProgress = Math.min((progress * 2) / 16, 1); // Slow down the transition
+          // Modify ground material properties
+          ground.material.color.lerp(blackColor, slowProgress); // Turn to black gradually
+          grid.material.color.lerp(greyColor, slowProgress); // Turn to black gradually
+          updateGroundDimensions(16, 7);
+          updateGridDimensions(7, 3);
+        }
+        // If transition is still in progress, continue updating
+        if (progress < 1) {
+          requestAnimationFrame(performTransition);
+        } else {
         }
       };
 

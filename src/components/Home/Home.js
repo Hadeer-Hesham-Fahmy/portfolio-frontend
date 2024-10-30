@@ -51,7 +51,7 @@ function Home() {
           <Container className="heading-container">
             <Row>
               <Col className="heading-col">
-                <h1 className="heading">HI THERE!</h1>
+                <h1 className="heading">HEY THERE!</h1>
                 <h1 className="heading-name">
                   <span>I'M</span>
                 </h1>
