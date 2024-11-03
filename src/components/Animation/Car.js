@@ -7,6 +7,7 @@ import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 import Stats from "three/examples/jsm/libs/stats.module";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
+import { gsap } from "gsap";
 
 const CarModel = () => {
   const containerRef = useRef();
@@ -23,6 +24,8 @@ const CarModel = () => {
     let textSprite;
     let newTextSprite;
     let lastTextSprite;
+    let bookNameSprite;
+    let canvas;
 
     let firstPosition = {
       x: 0.011360530913838223,
@@ -94,11 +97,12 @@ const CarModel = () => {
       controls.update();
 
       //    Add an event listener to log camera details on change
-      controls.addEventListener("change", () => {
-        console.log("Camera Position:", camera.position);
-        console.log("Camera Rotation:", camera.rotation);
-        console.log("Controls Target:", controls.target);
-      });
+      // controls.addEventListener("change", () => {
+      //   console.log("Camera Position:", camera.position);
+      //   console.log("Camera Rotation:", camera.rotation);
+      //   console.log("Controls Target:", controls.target);
+      // });
+
       // Set up the scene
       scene = new THREE.Scene();
 
@@ -291,6 +295,12 @@ const CarModel = () => {
           // Add the car model to the scene
           scene.add(carModel);
 
+          controls.addEventListener("change", () => {
+            console.log("Car Position:", carModel.position);
+            console.log("Car Rotation:", carModel.rotation);
+            console.log("Controls Target:", controls.target);
+          });
+
           // Set a timeout for animateGridPositionBeforeTransition
           setTimeout(() => {
             animateGridPositionBeforeTransition();
@@ -328,6 +338,23 @@ const CarModel = () => {
       // Save the second position after the animation completes
       localStorage.setItem("cameraPosition", JSON.stringify(secondPosition));
       localStorage.setItem("cameraRotation", JSON.stringify(secondRotation));
+    };
+
+    const createSpine = () => {
+      const spine = new THREE.Mesh(
+        new THREE.PlaneGeometry(16, 3), // Narrow plane for the spine
+        new THREE.MeshStandardMaterial({
+          color: 0x4b4b4b,
+          // roughness: 0.2,
+          // metalness: 0.1,
+        })
+      );
+      spine.rotation.y = Math.PI; // Rotate to be vertical
+      spine.rotation.x = -10; // Rotate to be vertical
+      const goundXposition = ground.position.x;
+      spine.position.set(goundXposition, -0.05, 4); // Align with the edge of the ground plane
+      spine.receiveShadow = true;
+      scene.add(spine);
     };
 
     const createSmoke = () => {
@@ -677,6 +704,29 @@ const CarModel = () => {
       updateGridPosition();
     };
 
+    const animateGridPositionBeforeSeventhTransition = () => {
+      const initialDuration = 2; // Initial duration for grid movement
+      const startTime = clock.getElapsedTime();
+      let speed = 0; // Initial speed
+
+      const updateGridPosition = () => {
+        const elapsedTime = clock.getElapsedTime() - startTime;
+
+        // Increase speed over time
+        speed += 1 * elapsedTime; // Adjust this value to control the acceleration rate
+
+        if (elapsedTime >= initialDuration) {
+          transitionCarToNinethPosition();
+          return;
+        }
+
+        // Continue updating the grid position
+        requestAnimationFrame(updateGridPosition);
+      };
+
+      updateGridPosition();
+    };
+
     // Smoothly transitions the camera position and rotation
     const transitionCameraToThirdPosition = () => {
       const thirdPosition = new THREE.Vector3(
@@ -806,22 +856,24 @@ const CarModel = () => {
     // });
 
     const createTextSprite = (texts, options = {}) => {
-      const canvas = document.createElement("canvas");
+      canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
       const fontSize = options.fontSize || 45; // Set a default font size
       const lineHeight = options.lineHeight || 72; // Set a default font size
+      const color = options.color || "#000000"; // Default color if not provided
+      const padding = options.padding || 20; // Default to 0 if padding not provided
 
       // Adjust canvas size to fit text length and number of lines
-      canvas.width = 800; // Adjust width based on text length
-      canvas.height = lineHeight * texts.length + 100; // Adjust height based on the number of lines
+      canvas.width = 800 + padding * 2; // Adjust width based on text length
+      canvas.height = lineHeight * texts.length + 100 + padding * 2; // Adjust height based on the number of lines
 
       // Set the font style
       context.font = `bold ${fontSize}px Roboto`;
-      context.fillStyle = "#000000"; // Text color
+      context.fillStyle = color;
 
-      // Loop through each line of text and draw it on the canvas
+      // Draw each line of text with padding applied
       texts.forEach((text, index) => {
-        context.fillText(text, 20, (index + 1) * lineHeight); // Add padding from the left side
+        context.fillText(text, padding, (index + 1) * lineHeight + padding);
       });
 
       // Create texture from the canvas
@@ -1002,13 +1054,18 @@ const CarModel = () => {
         } else {
           transitionCounter++;
           if (transitionCounter === 3) {
-            animateGridPositionBeforeSixthTransition();
+            setTimeout(() => {
+              scene.remove(textSprite, newTextSprite); // Add the sprite to the scene
 
-            return; // Exit the function if the limit is reached
+              animateGridPositionBeforeSixthTransition();
+
+              return; // Exit the function if the limit is reached
+            }, 2000);
+          } else {
+            setTimeout(() => {
+              animateGridPositionBeforeFifthTransition();
+            }, 2000);
           }
-          setTimeout(() => {
-            animateGridPositionBeforeFifthTransition();
-          }, 2000);
         }
       };
 
@@ -1042,6 +1099,7 @@ const CarModel = () => {
     };
 
     const transitionCameraToSeventhPosition = () => {
+      createSpine();
       const seventhPosition = new THREE.Vector3(
         5.50008718517777052084,
         88.43225805251171,
@@ -1053,28 +1111,25 @@ const CarModel = () => {
         -1.701581204220701
       );
 
-      const duration = 3; // Transition duration in seconds for a smoother effect
-      const startPosition = camera.position.clone();
-      const startRotation = camera.rotation.clone();
+      const duration = 3; // Duration for each transition in seconds
 
-      const elapsedTime = { value: 0 };
+      let elapsedTimeTransition = { value: 0 }; // Separate elapsed time for performTransition
+      let elapsedTimeCarModel = { value: 0 }; // Separate elapsed time for performCarModelTransition
 
-      // Sine ease-in-out function
       const easeInOutSine = (t) => (1 - Math.cos(t * Math.PI)) / 2;
 
       const performTransition = () => {
         const delta = clock.getDelta();
-        elapsedTime.value += delta;
+        elapsedTimeTransition.value += delta;
 
-        // Calculate eased progress using the sine easing function
-        const progress = Math.min(elapsedTime.value / duration, 1);
+        const progress = Math.min(elapsedTimeTransition.value / duration, 1);
         const easedT = easeInOutSine(progress);
+        const startPosition = camera.position.clone();
+        const startRotation = camera.rotation.clone();
+        // Bounce and wobble effects
+        const bounceY = Math.sin(progress * 10 * Math.PI) * 2;
+        const wobbleX = Math.sin(progress * 5 * Math.PI) * 0.05;
 
-        // Apply a funny bounce effect on the Y axis and wobble on the X axis
-        const bounceY = Math.sin(progress * 10 * Math.PI) * 2; // Creates an exaggerated bouncing effect
-        const wobbleX = Math.sin(progress * 5 * Math.PI) * 0.05; // Wobbles on the X axis
-
-        // Create a new funny position by adding bounce and wobble
         const funnyPosition = new THREE.Vector3(
           THREE.MathUtils.lerp(
             startPosition.x,
@@ -1089,7 +1144,6 @@ const CarModel = () => {
           seventhPosition.z
         );
 
-        // Keep the rotation interpolation unchanged
         interpolateCameraThirdPositionRotation(
           startPosition,
           funnyPosition,
@@ -1098,24 +1152,183 @@ const CarModel = () => {
           easedT
         );
 
-        // Ground manipulation
         if (ground && grid) {
-          // Assuming groundMesh is your ground object
-          // Calculate the color change for the ground
           const blackColor = new THREE.Color(0x222222);
           const greyColor = new THREE.Color(0x565656);
-          // Slowing down the progress change by dividing by a factor (e.g., 5)
-          const slowProgress = Math.min((progress * 2) / 16, 1); // Slow down the transition
-          // Modify ground material properties
-          ground.material.color.lerp(blackColor, slowProgress); // Turn to black gradually
-          grid.material.color.lerp(greyColor, slowProgress); // Turn to black gradually
+          const slowProgress = Math.min((progress * 2) / 16, 1);
+
+          ground.material.color.lerp(blackColor, slowProgress);
+          ground.material.metalness = 0;
+          ground.material.roughness = 0;
+          grid.material.color.lerp(greyColor, slowProgress);
           updateGroundDimensions(16, 7);
           updateGridDimensions(7, 3);
         }
-        // If transition is still in progress, continue updating
+
         if (progress < 1) {
           requestAnimationFrame(performTransition);
         } else {
+          performCarModelTransition(); // Begin car model transition after completing performTransition
+
+          bookNameSprite = createTextSprite(["  A", " GAME", "CHANGER"], {
+            fontSize: 550,
+            color: "#565656",
+            lineHeight: 800,
+            padding: 2500,
+            fontFamily: "Arial Black",
+            gradient: {
+              start: "#ff7e5f", // Start color of the gradient
+              end: "#ffffff", // End color of the gradient
+            },
+            shadow: {
+              color: "#000000", // Shadow color
+              blur: 20, // Shadow blur
+              offsetX: 5, // Horizontal shadow offset
+              offsetY: 5, // Vertical shadow offset
+            },
+          });
+
+          // Set scale and position
+          const scaleX = canvas.width / 400;
+          const scaleY = canvas.height / 400;
+          bookNameSprite.scale.set(scaleX, scaleY, 1);
+          bookNameSprite.position.set(2, 0, -2.1);
+          bookNameSprite.alpha = 0; // Start fully transparent
+
+          // Add the sprite to the scene
+          scene.add(bookNameSprite);
+
+          // Animate the sprite to fade in and slightly move forward after a short delay
+          gsap.to(bookNameSprite.position, {
+            duration: 1,
+            z: -2.05, // Move slightly closer for effect
+            ease: "power2.out",
+            delay: 0.5, // Optional: Delay the animation start
+          });
+
+          gsap.to(bookNameSprite, {
+            duration: 1,
+            alpha: 1, // Fade in
+            ease: "power2.out",
+            delay: 0.5, // Optional: Match delay with position animation
+          });
+        }
+      };
+
+      const performCarModelTransition = () => {
+        const eighthPosition = new THREE.Vector3(
+          -7.5,
+          4,
+          -1.000011467962763065247
+        );
+        const eighthRotation = new THREE.Euler(0, 0.2, -0.2);
+
+        const startCarPosition = carModel.position.clone();
+        const startCarRotation = carModel.rotation.clone();
+
+        const delta = clock.getDelta();
+        elapsedTimeCarModel.value += delta;
+
+        const progress = Math.min(elapsedTimeCarModel.value / duration, 1);
+        const easedT = easeInOutSine(progress);
+
+        const bounceY = Math.sin(easedT * Math.PI * 4) * 0.5;
+        const wobbleX = Math.sin(easedT * Math.PI * 3) * 0.02;
+
+        const funnyPosition = new THREE.Vector3(
+          THREE.MathUtils.lerp(
+            startCarPosition.x,
+            eighthPosition.x + wobbleX,
+            easedT
+          ),
+          THREE.MathUtils.lerp(
+            startCarPosition.y,
+            eighthPosition.y + bounceY,
+            easedT
+          ),
+          eighthPosition.z
+        );
+
+        interpolateCarPositionRotation(
+          startCarPosition,
+          funnyPosition,
+          startCarRotation,
+          eighthRotation,
+          easedT
+        );
+
+        if (progress < 1) {
+          requestAnimationFrame(performCarModelTransition);
+        } else {
+          console.log("Car model transition complete.");
+
+          animateGridPositionBeforeSeventhTransition();
+        }
+      };
+
+      performTransition();
+    };
+
+    const transitionCarToNinethPosition = () => {
+      const ninethPosition = new THREE.Vector3(
+        -3.4856306573377625,
+        28.042793437870927,
+        -25.411137040453539
+      );
+      const ninethRotation = new THREE.Euler(
+        2.832009196432874e-17,
+        -0.2000000000000002,
+        -1.4999999999999999
+      );
+
+      const targetScale = new THREE.Vector3(8.6, 8.6, 8.6); // Define your target scale
+      const duration = 3; // Duration for each transition in seconds
+
+      let elapsedTimeTransition = { value: 0 }; // Separate elapsed time for performTransition
+
+      const easeInOutSine = (t) => (1 - Math.cos(t * Math.PI)) / 2;
+
+      const performTransition = () => {
+        const delta = clock.getDelta();
+        elapsedTimeTransition.value += delta;
+
+        const progress = Math.min(elapsedTimeTransition.value / duration, 1);
+        const easedT = easeInOutSine(progress);
+
+        const startPosition = carModel.position.clone();
+        const startRotation = carModel.rotation.clone();
+        const startScale = carModel.scale.clone(); // Get the current scale
+
+        // Interpolate position and rotation
+        interpolateCarPositionRotation(
+          startPosition,
+          ninethPosition,
+          startRotation,
+          ninethRotation,
+          easedT
+        );
+
+        // Interpolate scale
+        carModel.scale.x = THREE.MathUtils.lerp(
+          startScale.x,
+          targetScale.x,
+          easedT
+        );
+        carModel.scale.y = THREE.MathUtils.lerp(
+          startScale.y,
+          targetScale.y,
+          easedT
+        );
+        carModel.scale.z = THREE.MathUtils.lerp(
+          startScale.z,
+          targetScale.z,
+          easedT
+        );
+
+        if (progress < 1) {
+          requestAnimationFrame(performTransition);
+        } else {
+          // You can add any additional logic here after the transition completes
         }
       };
 
@@ -1146,6 +1359,31 @@ const CarModel = () => {
       updateGridPosition();
     };
 
+    const interpolateCarPositionRotation = (
+      startPos,
+      endPos,
+      startRot,
+      endRot,
+      t
+    ) => {
+      // Interpolate camera position
+      carModel.position.lerpVectors(startPos, endPos, t);
+
+      // Create quaternions from the start and end Euler rotations
+      const startQuaternion = new THREE.Quaternion().setFromEuler(startRot);
+      const endQuaternion = new THREE.Quaternion().setFromEuler(endRot);
+
+      // Interpolate the quaternions using spherical linear interpolation (slerp)
+      const interpolatedQuaternion = new THREE.Quaternion().slerpQuaternions(
+        startQuaternion,
+        endQuaternion,
+        t
+      );
+
+      // Apply the interpolated quaternion to the camera
+      carModel.quaternion.copy(interpolatedQuaternion);
+    };
+
     // Interpolates camera position and rotation smoothly using quaternions
     const interpolateCameraThirdPositionRotation = (
       startPos,
@@ -1170,13 +1408,6 @@ const CarModel = () => {
 
       // Apply the interpolated quaternion to the camera
       camera.quaternion.copy(interpolatedQuaternion);
-
-      // console.log(
-      // `Interpolated Quaternion: ${interpolatedQuaternion.toArray()}`
-      console.log("Camera Position:", camera.position);
-      console.log("Camera Rotation:", camera.rotation);
-      console.log("Controls Target:", controls.target);
-      // );
     };
 
     // Rotates wheels during the transition
