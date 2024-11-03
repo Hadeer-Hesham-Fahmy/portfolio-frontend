@@ -401,7 +401,7 @@ button:focus {
   animation-delay: 2s !important;
   animation-timing-function: ease-out !important;
   animation-fill-mode: forwards !important;
-  font-size: 4em !important;
+  font-size: 3.5em !important;
   /* padding-left: 50px !important; */
   font-weight: 600 !important; /* Increased weight for stronger emphasis */
   text-align: left;
