@@ -473,7 +473,7 @@ const CarModel = () => {
         loader.load(
           "https://raw.githubusercontent.com/7dir/json-fonts/master/fonts/cyrillic/roboto/Roboto_Regular.json",
           (font) => {
-            const textGeometry = new TextGeometry("a FULL STACK DEVELOPER", {
+            const textGeometry = new TextGeometry("a Software Engineer I I", {
               font: font,
               size: 0.021,
               height: -0.01,
@@ -1200,17 +1200,17 @@ const CarModel = () => {
 
           // Animate the sprite to fade in and slightly move forward after a short delay
           gsap.to(bookNameSprite.position, {
-            duration: 1,
+            duration: 2,
             z: -2.05, // Move slightly closer for effect
             ease: "power2.out",
-            delay: 0.5, // Optional: Delay the animation start
+            // delay: 0.5, // Optional: Delay the animation start
           });
 
           gsap.to(bookNameSprite, {
-            duration: 1,
+            duration: 2,
             alpha: 1, // Fade in
             ease: "power2.out",
-            delay: 0.5, // Optional: Match delay with position animation
+            // delay: 0.5, // Optional: Match delay with position animation
           });
         }
       };

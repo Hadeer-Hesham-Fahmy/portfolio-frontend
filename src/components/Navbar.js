@@ -7,6 +7,7 @@ import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 import { CgGitFork } from "react-icons/cg";
 import { ImBlog } from "react-icons/im";
+import { FiExternalLink } from "react-icons/fi";
 import {
   AiFillStar,
   AiOutlineHome,
@@ -94,11 +95,18 @@ function NavBar() {
 
             <Nav.Item>
               <Nav.Link
-                href="https://soumyajitblogs.vercel.app/"
-                target="_blank"
-                rel="noreferrer"
+                as="button"
+                onClick={() =>
+                  (window.location.href = "mailto:heidyhesham3@gmail.com")
+                }
+                style={{
+                  border: "none",
+                  background: "none",
+                  color: "inherit",
+                  padding: 0,
+                }}
               >
-                <ImBlog style={{ marginBottom: "2px" }} /> Blogs
+                <FiExternalLink style={{ marginBottom: "2px" }} /> Mail Me
               </Nav.Link>
             </Nav.Item>
 

@@ -17,7 +17,7 @@ html {
 
 body {
   /* font-family: 'Roboto', sans-serif; */
-  background: linear-gradient(to bottom right, #686868, #a0a0a0);
+  background: linear-gradient(to left, #000000, #1c1718); /* Updated gradient using palette colors */
   /* background-color: #000000; */
   color: var(--dominant-text-color);
   margin: 0;
@@ -552,6 +552,11 @@ justify-content: flex-start;
   padding-left: 15px;
 }
 
+.social-icons:hover {
+  box-shadow: 0 0 5px #ff0000; 
+  /* text-shadow: 0 0 2px #ff0000; from your palette */
+}
+
 .icon-colour {
   color: #f70101 !important; /* from your palette */
   font-weight: bold !important;
@@ -562,6 +567,8 @@ justify-content: flex-start;
 /* Footer */
 /* --------- */
 .footer {
+  position: relative;
+  z-index: 100;
   background-color: #1c1718; /* from your palette */
   bottom: 0 !important;
   padding-top: 10px !important;
@@ -582,13 +589,14 @@ justify-content: flex-start;
 }
 
 .footer h3 {
-  font-size: 1.2em;
+  font-size: 0.8em;
   /* color: #cfcbc8 !important; */
   margin-top: 0.5em !important;
   margin-bottom: 0.5em !important;
   font-weight: bold !important; /* Stronger font weight */
 }
 .footer-icons {
+  color: #ff0000 !important;
   margin-top: 0.5em !important;
   margin-bottom: 0.5em !important;
   padding: 0 !important;
@@ -622,8 +630,8 @@ justify-content: flex-start;
 }
 
 .project-card-view {
-  box-shadow: 0 4px 5px 3px rgba(206, 121, 129, 0.459) !important; /* updated shadow */
-  /* color: #cfcbc8 !important; */
+  box-shadow: 0 4px 5px 3px rgba(265, 265, 265, 0.459) !important; /* updated shadow */
+  color: #cfcbc8 !important;
   background-color: transparent !important;
   opacity: 0.9 !important;
   transition: all 0.5s ease 0s !important;
@@ -663,17 +671,18 @@ justify-content: flex-start;
 
 .btn-primary {
   color: #fff !important;
-  background-color: #cfcbc8 !important; /* updated primary button color */
+  background-color: #000000 !important; /* updated primary button color */
   border-color: #cfcbc8 !important;
   font-weight: bold !important; /* Strong button text */
   transition: background-color 0.4s ease !important;
+  margin-top: 0.5rem !important;
 }
 
 .btn-primary:hover {
   color: #fff !important;
-  background-color: #cfcbc8 !important; /* updated hover */
+  background-color: #000000 !important; /* updated hover */
   border-color: #cfcbc8 !important;
-  transform: scale(1.05) !important; /* Make hover more dominant */
+  /* transform: scale(1.05) !important; Make hover more dominant */
 }
 
 .project-heading {
