@@ -1,4 +1,5 @@
 <h2 align="center">
+<h2 align="center">
   Portfolio Website - v2.0<br/>
 </h2>
 
@@ -20,6 +21,8 @@
 [![forthebadge](https://forthebadge.com/images/badges/open-source.svg)](https://forthebadge.com) &nbsp;
 ![GitHub Repo stars](https://img.shields.io/github/stars/hadeerhesham/Portfolio?color=red&logo=github&style=for-the-badge) &nbsp;
 ![GitHub forks](https://img.shields.io/github/forks/hadeerhesham/Portfolio?color=red&logo=github&style=for-the-badge)
+![GitHub Repo stars](https://img.shields.io/github/stars/hadeerhesham/Portfolio?color=red&logo=github&style=for-the-badge) &nbsp;
+![GitHub forks](https://img.shields.io/github/forks/hadeerhesham/Portfolio?color=red&logo=github&style=for-the-badge)
 
 </center>
 
@@ -27,6 +30,7 @@
 
 ## TL;DR
 
+You can fork this repo to modify and make changes of your own. Please give me proper credit by linking back to [HadeerHesham](https://github.com/Hadeer-Hesham-Fahmy/portfolio-frontend). Thanks!
 You can fork this repo to modify and make changes of your own. Please give me proper credit by linking back to [HadeerHesham](https://github.com/Hadeer-Hesham-Fahmy/portfolio-frontend). Thanks!
 
 ## Built With
@@ -40,13 +44,16 @@ This project was built using these technologies.
 - VsCode
 - Vercel
 - ThreeJS
+- ThreeJS
 
 ## Features
 
 **📖 Multi-Page Layout**
 
 **🎨 Styled with React-Bootstrap and CSS with easy to customize colors**
+**🎨 Styled with React-Bootstrap and CSS with easy to customize colors**
 
+**📱 Partially Responsive**
 **📱 Partially Responsive**
 
 ## Getting Started
@@ -71,5 +78,7 @@ You will find all the components used and you can edit your information accordin
 ## Demo Video
 
 Click the link to watch the demo video of the portfolio website:
+Click the link to watch the demo video of the portfolio website:
 
+[Watch the demo video](https://drive.google.com/file/d/1MH36kO-K_4OU7wTL2csSBGxfKG2EOb9H/view?usp=sharing)
 [Watch the demo video](https://drive.google.com/file/d/1MH36kO-K_4OU7wTL2csSBGxfKG2EOb9H/view?usp=sharing)
