@@ -1,9 +1,15 @@
 <h2 align="center">
   Portfolio Website - v2.0<br/>
-  <a href="https://soumyajit.vercel.app/" target="_blank">soumyajit.tech</a>
 </h2>
+
 <div align="center">
-  <img alt="Demo" src="./Images/readme-img1.png" />
+  <img alt="Demo" src="./Images/readme-img.png" />
+  <img alt="Demo" src="./Images/readme-img2.png" />
+  <img alt="Demo" src="./Images/readme-img3.png" />
+  <img alt="Demo" src="./Images/readme-img4.png" />
+  <img alt="Demo" src="./Images/readme-img5.png" />
+  <img alt="Demo" src="./Images/readme-img6.png" />
+  <img alt="Demo" src="./Images/readme-img7.png" />
 </div>
 
 <br/>
@@ -13,25 +19,21 @@
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com) &nbsp;
 [![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://forthebadge.com) &nbsp;
 [![forthebadge](https://forthebadge.com/images/badges/open-source.svg)](https://forthebadge.com) &nbsp;
-![GitHub Repo stars](https://img.shields.io/github/stars/soumyajit4419/Portfolio?color=red&logo=github&style=for-the-badge) &nbsp;
-![GitHub forks](https://img.shields.io/github/forks/soumyajit4419/Portfolio?color=red&logo=github&style=for-the-badge)
+![GitHub Repo stars](https://img.shields.io/github/stars/hadeerhesham/Portfolio?color=red&logo=github&style=for-the-badge) &nbsp;
+![GitHub forks](https://img.shields.io/github/forks/hadeerhesham/Portfolio?color=red&logo=github&style=for-the-badge)
+![GitHub Repo stars](https://img.shields.io/github/stars/hadeerhesham/Portfolio?color=red&logo=github&style=for-the-badge) &nbsp;
+![GitHub forks](https://img.shields.io/github/forks/hadeerhesham/Portfolio?color=red&logo=github&style=for-the-badge)
 
 </center>
 
-<h3 align="center">
-    🔹
-    <a href="https://github.com/soumyajit4419/Portfolio/issues">Report Bug</a> &nbsp; &nbsp;
-    🔹
-    <a href="https://github.com/soumyajit4419/Portfolio/issues">Request Feature</a>
-</h3>
+<br/>
 
 ## TL;DR
 
-You can fork this repo to modify and make changes of your own. Please give me proper credit by linking back to [Soumyajit4419](https://github.com/soumyajit4419/Portfolio). Thanks!
+You can fork this repo to modify and make changes of your own. Please give me proper credit by linking back to [HadeerHesham](https://github.com/Hadeer-Hesham-Fahmy/portfolio-frontend). Thanks!
+You can fork this repo to modify and make changes of your own. Please give me proper credit by linking back to [HadeerHesham](https://github.com/Hadeer-Hesham-Fahmy/portfolio-frontend). Thanks!
 
 ## Built With
-
-My personal portfolio <a href="https://soumyajit.vercel.app/" target="_blank">soumyajit.tech</a> which features some of my github projects as well as my resume and technical skills.<br/>
 
 This project was built using these technologies.
 
@@ -41,14 +43,18 @@ This project was built using these technologies.
 - CSS3
 - VsCode
 - Vercel
+- ThreeJS
+- ThreeJS
 
 ## Features
 
 **📖 Multi-Page Layout**
 
-**🎨 Styled with React-Bootstrap and Css with easy to customize colors**
+**🎨 Styled with React-Bootstrap and CSS with easy to customize colors**
+**🎨 Styled with React-Bootstrap and CSS with easy to customize colors**
 
-**📱 Fully Responsive**
+**📱 Partially Responsive**
+**📱 Partially Responsive**
 
 ## Getting Started
 
@@ -69,8 +75,10 @@ The page will reload if you make edits.
 Open the project folder and Navigate to `/src/components/`. <br/>
 You will find all the components used and you can edit your information accordingly.
 
-### Show your support
+## Demo Video
 
-Give a ⭐ if you like this website!
+Click the link to watch the demo video of the portfolio website:
 
-<a href="https://www.buymeacoffee.com/soumyajit4419" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-violet.png" alt="Buy Me A Coffee" height= "60px" width= "217px" ></a>
+
+[Watch the demo video](https://drive.google.com/file/d/1MH36kO-K_4OU7wTL2csSBGxfKG2EOb9H/view?usp=sharing)
+

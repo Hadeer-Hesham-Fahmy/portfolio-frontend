@@ -8,7 +8,7 @@ body {
   font-weight: 900;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: linear-gradient(to left, #ffffff, #cfcbc8); /* Updated gradient using palette colors */
+  background: linear-gradient(to left, #000000, #1c1718); /* Updated gradient using palette colors */
   color: #cfcbc8;
   letter-spacing: 0.05em;
 }

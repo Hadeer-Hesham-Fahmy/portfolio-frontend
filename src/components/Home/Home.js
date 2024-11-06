@@ -4,9 +4,9 @@ import Particle from "../Particle";
 import Home2 from "./Home2";
 import Type from "./Type";
 import CarModel from "../Animation/Car";
-import backgroundVideo from '../../Assets/my-photo.mp4';
-import nameGif from '../../Assets/hadeer.gif';
-import nameImage from '../../Assets/hadeer.png';
+import backgroundVideo from "../../Assets/my-photo.mp4";
+import nameGif from "../../Assets/hadeer.gif";
+import nameImage from "../../Assets/hadeer.png";
 
 function Home() {
   const [isNameGifVisible, setIsNameGifVisible] = useState(false);
@@ -23,10 +23,11 @@ function Home() {
     };
   }, []);
 
-  const nameBackgroundImage = isNameGifVisible && !isNameImageVisible 
-    ? nameGif 
-    : isNameImageVisible 
-      ? nameImage 
+  const nameBackgroundImage =
+    isNameGifVisible && !isNameImageVisible
+      ? nameGif
+      : isNameImageVisible
+      ? nameImage
       : "none";
 
   return (
@@ -50,7 +51,7 @@ function Home() {
           <Container className="heading-container">
             <Row>
               <Col className="heading-col">
-                <h1 className="heading">HI THERE!</h1>
+                <h1 className="heading">HEY THERE!</h1>
                 <h1 className="heading-name">
                   <span>I'M</span>
                 </h1>
@@ -66,7 +67,7 @@ function Home() {
         </div>
       </Container>
 
-      <Home2 />
+      {/* <Home2 /> */}
     </section>
   );
 }
