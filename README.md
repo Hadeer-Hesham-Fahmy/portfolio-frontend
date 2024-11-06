@@ -78,7 +78,7 @@ You will find all the components used and you can edit your information accordin
 ## Demo Video
 
 Click the link to watch the demo video of the portfolio website:
-Click the link to watch the demo video of the portfolio website:
+
 
 [Watch the demo video](https://drive.google.com/file/d/1MH36kO-K_4OU7wTL2csSBGxfKG2EOb9H/view?usp=sharing)
-[Watch the demo video](https://drive.google.com/file/d/1MH36kO-K_4OU7wTL2csSBGxfKG2EOb9H/view?usp=sharing)
+
