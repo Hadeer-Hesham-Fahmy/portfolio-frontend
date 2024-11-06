@@ -2,91 +2,133 @@ import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import ProjectCard from "./ProjectCards";
 import Particle from "../Particle";
-import leaf from "../../Assets/Projects/leaf.png";
-import emotion from "../../Assets/Projects/emotion.png";
-import editor from "../../Assets/Projects/codeEditor.png";
-import chatify from "../../Assets/Projects/chatify.png";
-import suicide from "../../Assets/Projects/suicide.png";
-import bitsOfCode from "../../Assets/Projects/blog.png";
 
 function Projects() {
+  const projects = [
+    {
+      title: "OD",
+      desc: "SAP-integrated Learning Management System (LMS) for the Ministry of Commerce and Industry in Qatar. This project includes an admin dashboard to control the system and import Excel sheets, managing employee courses required for promotions with a Competency-Based Grading (CBG) system.",
+      urls: [
+        "https://admin.od-dev.space/auth/login",
+        "https://od-dev.space/auth/login",
+      ],
+      image: require("../../Assets/Projects/OD.png"), // Replace with the actual image URL if available
+    },
+    {
+      title: "OH-ME",
+      desc: "An e-commerce platform for an Italian client that facilitates purchasing products and taking advantage of bundles and offers. The project includes a user-friendly website and an admin dashboard, enhancing the shopping experience and streamlining administrative tasks.",
+      urls: ["https://oh-me.ae/", "https://admin.oh-me.ae/login"],
+      image: require("../../Assets/Projects/OH-ME.png"), // Replace with the actual image URL if available
+    },
+    {
+      title: "OBH",
+      desc: "An ERP system for law organizations, which includes two mobile applications, a user-friendly website, and an admin portal. This integrated solution enhances the efficiency of legal professionals and provides access to legal services for users.",
+      urls: [
+        "https://obh-client-lawyer-web.vercel.app/",
+        "https://obh-admin-phi.vercel.app/",
+      ],
+      image: require("../../Assets/Projects/OBH.png"), // Replace with the actual image URL if available
+    },
+    {
+      title: "Zumaa",
+      desc: "Zumaa is a Mobile App and an Admin WebApp for e-commerce designed to facilitate online buying and selling transactions. The website is divided into three main sections: the Seller section, the User section, and the Delivery section.",
+      urls: [
+        "https://drive.google.com/drive/folders/1g0DaddLch8YDLdJ30wrffLGXilw7tOP9",
+      ],
+      image: require("../../Assets/Projects/Zumaa.png"), // Replace with the actual image URL if available
+    },
+    {
+      title: "HSI",
+      desc: "Website serves as a powerful platform for HSI (Healthcare Solutions International), an ever-growing organization dedicated to raising the healthcare quality level all over Egypt.",
+      urls: [
+        "https://hsi-eg.co/",
+        "https://drive.google.com/drive/folders/10vFi-ZDA671WRbMHbHJaTuZz7rGrf4M3?usp=sharing",
+      ],
+      image: require("../../Assets/Projects/HSI.png"), // Replace with the actual image URL if available
+    },
+    {
+      title: "SDMATH",
+      desc: "Platform and mobile application project for the SD math program seek to develop children's thinking skills and simplify calculations by using online interactive games that enable children to solve the most complicated problems fast and easily without using calculators.",
+      urls: [
+        "https://drive.google.com/drive/folders/1DH-PnetwHf2z-5AndEIKT81fFvjliSE0?usp=sharing",
+      ],
+      image: require("../../Assets/Projects/SDMATH.png"), // Replace with the actual image URL if available
+    },
+    {
+      title: "MOHAMEEK (still working on it)",
+      desc: "Software as a Service (SaaS) platform using NestJS that features a comprehensive admin portal and dashboard. The project aims to provide businesses with a streamlined solution for managing their operations efficiently.",
+      // urls: [
+      //   "still working on it", // You can update this when the link is available
+      // ],
+      image: require("../../Assets/Projects/MOHAMEEK.png"), // Replace with the actual image URL if available
+    },
+    {
+      title: "Mediosis",
+      desc: "A platform for medical articles. It offers a user-friendly interface for readers to explore a wide range of informative and educational medical content. It caters to various user roles, including editors, admin, and users.",
+      urls: [
+        "https://drive.google.com/drive/folders/1qd7FAbDipId2Igqa_l9t9vbpaqyr8BpY?usp=sharing",
+      ],
+      image: require("../../Assets/Projects/Mediosis.png"), // Replace with the actual image URL if available
+    },
+    {
+      title: "ShopiHy",
+      desc: "My MERN stack e-commerce website. With an integration of MongoDB, Express.js, React.js, and Node.js, I have created an innovative platform that delivers an exceptional online shopping experience.",
+      urls: [
+        "https://www.linkedin.com/posts/hadeer-hesham-fahmy-45bb671b8_project-shopihy-mernstack-activity-6980269571064643585-zFcB?utm_source=share&utm_medium=member_desktop",
+      ],
+      image: require("../../Assets/Projects/ShopiHy.jpg"), // Replace with the actual image URL if available
+    },
+    {
+      title: "Old Portfolio",
+      desc: "It is a visually appealing and interactive website that showcases my work as a web developer. With smooth animations and seamless transitions, the website also features a dynamic blog section where I share my insights and experiences in the web development field.",
+      urls: [
+        "https://www.linkedin.com/posts/hadeer-hesham-fahmy-45bb671b8_project-portfoliowebsite-activity-6945008199016034304-CayA?utm_source=share&utm_medium=member_desktop",
+      ],
+      image: require("../../Assets/Projects/Portfolio.jpg"), // Replace with the actual image URL if available
+    },
+  ];
+
   return (
     <Container fluid className="project-section">
       <Particle />
       <Container>
         <h1 className="project-heading">
-          My Recent <strong className="purple">Works </strong>
+          Selected <strong className="purple">Projects </strong>
         </h1>
         <p style={{ color: "white" }}>
           Here are a few projects I've worked on recently.
         </p>
-        <Row style={{ justifyContent: "center", paddingBottom: "10px" }}>
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={chatify}
-              isBlog={false}
-              title="Chatify"
-              description="Personal Chat Room or Workspace to share resources and hangout with friends build with react.js, Material-UI, and Firebase. Have features which allows user for realtime messaging, image sharing as well as supports reactions on messages."
-              ghLink="https://github.com/soumyajit4419/Chatify"
-              demoLink="https://chatify-49.web.app/"
-            />
-          </Col>
-
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={bitsOfCode}
-              isBlog={false}
-              title="Bits-0f-C0de"
-              description="My personal blog page build with Next.js and Tailwind Css which takes the content from makdown files and renders it using Next.js. Supports dark mode and easy to write blogs using markdown."
-              ghLink="https://github.com/soumyajit4419/Bits-0f-C0de"
-              demoLink="https://blogs.soumya-jit.tech/"
-            />
-          </Col>
-
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={editor}
-              isBlog={false}
-              title="Editor.io"
-              description="Online code and markdown editor build with react.js. Online Editor which supports html, css, and js code with instant view of website. Online markdown editor for building README file which supports GFM, Custom Html tags with toolbar and instant preview.Both the editor supports auto save of work using Local Storage"
-              ghLink="https://github.com/soumyajit4419/Editor.io"
-              demoLink="https://editor.soumya-jit.tech/"              
-            />
-          </Col>
-
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={leaf}
-              isBlog={false}
-              title="Plant AI"
-              description="Used the plant disease dataset from Kaggle and trained a image classifer model using 'PyTorch' framework using CNN and Transfer Learning with 38 classes of various plant leaves. The model was successfully able to detect diseased and healthy leaves of 14 unique plants. I was able to achieve an accuracy of 98% by using Resnet34 pretrained model."
-              ghLink="https://github.com/soumyajit4419/Plant_AI"
-              demoLink="https://plant49-ai.herokuapp.com/"
-            />
-          </Col>
-
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={suicide}
-              isBlog={false}
-              title="Ai For Social Good"
-              description="Using 'Natural Launguage Processing' for the detection of suicide-related posts and user's suicide ideation in cyberspace  and thus helping in sucide prevention."
-              ghLink="https://github.com/soumyajit4419/AI_For_Social_Good"
-              // demoLink="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley" <--------Please include a demo link here
-            />
-          </Col>
-
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={emotion}
-              isBlog={false}
-              title="Face Recognition and Emotion Detection"
-              description="Trained a CNN classifier using 'FER-2013 dataset' with Keras and tensorflow backened. The classifier sucessfully predicted the various types of emotions of human. And the highest accuracy obtained with the model was 60.1%.
-              Then used Open-CV to detect the face in an image and then pass the face to the classifer to predict the emotion of a person."
-              ghLink="https://github.com/soumyajit4419/Face_And_Emotion_Detection"
-              // demoLink="https://blogs.soumya-jit.tech/"      <--------Please include a demo link here 
-            />
-          </Col>
+        <Row
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            paddingBottom: "10px",
+          }}
+        >
+          <ul
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "space-around",
+              textAlign: "left",
+              listStyleType: "none",
+              padding: 0,
+            }}
+          >
+            {projects.map((project, index) => (
+              <Col md={4} className="project-card">
+                <ProjectCard
+                  imgPath={project.image}
+                  isBlog={false}
+                  title={project.title}
+                  description={project.desc}
+                  urls={project.urls}
+                />
+              </Col>
+            ))}
+          </ul>
         </Row>
       </Container>
     </Container>

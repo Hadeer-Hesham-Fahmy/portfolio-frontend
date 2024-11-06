@@ -4,8 +4,15 @@ import {
   SiVisualstudiocode,
   SiPostman,
   SiSlack,
-  SiVercel,
   SiMacos,
+  SiDocker,
+  SiSocketdotio,
+  SiGithub,
+  SiGitlab,
+  SiLinux,
+  SiWindows,
+  SiJenkins,
+  SiJest,
 } from "react-icons/si";
 
 function Toolstack() {
@@ -14,6 +21,13 @@ function Toolstack() {
       <Col xs={4} md={2} className="tech-icons">
         <SiMacos />
       </Col>
+      <Col xs={4} md={2} className="tech-icons">
+        <SiLinux />
+      </Col>
+      <Col xs={4} md={2} className="tech-icons">
+        <SiWindows />
+      </Col>
+
       <Col xs={4} md={2} className="tech-icons">
         <SiVisualstudiocode />
       </Col>
@@ -24,7 +38,22 @@ function Toolstack() {
         <SiSlack />
       </Col>
       <Col xs={4} md={2} className="tech-icons">
-        <SiVercel />
+        <SiDocker />
+      </Col>
+      <Col xs={4} md={2} className="tech-icons">
+        <SiSocketdotio />
+      </Col>
+      <Col xs={4} md={2} className="tech-icons">
+        <SiGithub /> {/* GitHub Icon */}
+      </Col>
+      <Col xs={4} md={2} className="tech-icons">
+        <SiGitlab /> {/* GitHub Icon */}
+      </Col>
+      <Col xs={4} md={2} className="tech-icons">
+        <SiJenkins /> {/* GitHub Icon */}
+      </Col>
+      <Col xs={4} md={2} className="tech-icons">
+        <SiJest /> {/* GitHub Icon */}
       </Col>
     </Row>
   );
