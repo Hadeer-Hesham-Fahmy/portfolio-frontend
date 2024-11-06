@@ -1,5 +1,4 @@
 <h2 align="center">
-<h2 align="center">
   Portfolio Website - v2.0<br/>
 </h2>
 
@@ -12,6 +11,7 @@
   <img alt="Demo" src="./Images/readme-img6.png" />
   <img alt="Demo" src="./Images/readme-img7.png" />
 </div>
+
 <br/>
 
 <center>
